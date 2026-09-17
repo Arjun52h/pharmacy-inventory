@@ -1,4 +1,7 @@
 const Batch = require("../models/Batch");
+const {
+  createReorderAlert,
+} = require("../services/notificationService");
 
 // Add a new batch
 const createBatch = async (req, res) => {
@@ -232,6 +235,35 @@ const dispenseMedicine = async (req, res) => {
         quantity: quantityTaken,
       });
     }
+
+    // Check remaining in-date stock after dispensing
+const remainingBatches = await Batch.find({
+  medicineName: {
+    $regex: `^${medicineName}$`,
+    $options: "i",
+  },
+  expiryDate: {
+    $gte: today,
+  },
+  quantity: {
+    $gt: 0,
+  },
+});
+
+const remainingStock = remainingBatches.reduce(
+  (total, batch) => total + batch.quantity,
+  0
+);
+
+const REORDER_THRESHOLD = 10;
+
+if (remainingStock < REORDER_THRESHOLD) {
+  createReorderAlert({
+    medicineName,
+    currentStock: remainingStock,
+    threshold: REORDER_THRESHOLD,
+  });
+}
 
     res.json({
       success: true,

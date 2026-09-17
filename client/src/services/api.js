@@ -4,6 +4,10 @@ const API = axios.create({
   baseURL: "/api",
 });
 
+const CLOCK_API = axios.create({
+  baseURL: "",
+});
+
 export const getBatches = (search = "") =>
   API.get(`/batches?search=${encodeURIComponent(search)}`);
 
@@ -21,5 +25,8 @@ export const getExpiringBatches = (days = 30) =>
 
 export const getMedicineStock = () =>
   API.get("/batches/stock/summary");
+
+export const runDailyAutomation = () =>
+  CLOCK_API.post("/clock");
 
 export default API;

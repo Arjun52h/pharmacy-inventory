@@ -24,6 +24,17 @@ const batchSchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
+
+    // T2 Automation
+    flagged: {
+      type: Boolean,
+      default: false,
+    },
+
+    quarantined: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   getBatches,
-  createBatch,
-  dispenseMedicine,
   getExpiringBatches,
   getMedicineStock,
+  createBatch,
+  dispenseMedicine,
+  runDailyAutomation,
 } from "./services/api";
 
 function App() {
@@ -150,6 +151,26 @@ const sellableStock = useMemo(() => {
     });
   };
 
+
+  const handleDailyAutomation = async () => {
+  try {
+    setError("");
+    setMessage("");
+
+    const response = await runDailyAutomation();
+
+    setMessage(
+      `Daily check completed: ${response.data.flagged} flagged, ${response.data.quarantined} quarantined`
+    );
+
+    await loadData();
+  } catch (error) {
+    setError(
+      error.response?.data?.message || "Failed to run daily automation"
+    );
+  }
+};
+
  const getStatus = (expiryDate, quantity) => {
   if (quantity === 0) return "out-of-stock";
 
@@ -190,6 +211,10 @@ const sellableStock = useMemo(() => {
             onClick={() => setShowAdd(true)}
           >
             + Add Batch
+          </button>
+
+          <button onClick={handleDailyAutomation}>
+            Run Daily Check
           </button>
         </div>
       </header>

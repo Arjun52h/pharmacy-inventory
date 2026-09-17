@@ -2,8 +2,10 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 require("dotenv").config();
-
+const automationRoutes = require("./routes/automationRoutes");
 const batchRoutes = require("./routes/batchRoutes");
+const importRoutes = require("./routes/importRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 
 const app = express();
 
@@ -11,6 +13,10 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/batches", batchRoutes);
+app.use("/clock", automationRoutes);
+app.use("/api/batches/import", importRoutes);
+
+app.use("/outbox", notificationRoutes);
 
 app.get("/", (req, res) => {
   res.json({
